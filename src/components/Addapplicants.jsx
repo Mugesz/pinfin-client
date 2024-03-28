@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import axios from "axios";
-import Header from "./Header";
 import { useNavigate } from "react-router-dom";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
-import { app, storage } from "../config/firebase";
+import { storage } from "../config/firebase";
+import { config } from "../Api";
+import SuccessModal from "./SuccessModel";
+import Header from "./Header";
+
 
 const Addapplicants = () => {
   const [imageFile, setImageFile] = useState(null);
   const [imageFileUrl, setImageFileUrl] = useState(null);
   const [uploadCompleted, setUploadCompleted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [reportingperson, setReportingperson] = useState([]);
+  const [showModal, setShowModal] = useState(false); 
 
   const HandleImage = async (e) => {
     const files = e.target.files[0];
@@ -64,21 +69,64 @@ const Addapplicants = () => {
       department: "",
       joining: "",
       reporting: "",
-      expirience: "",
+      expirience:"",
       salary: "",
       linkedin: "",
       image: "",
     },
-    validate: (values) => {},
+    validate: (values) => {
+      const errors = {};
+
+      if (!values.name) {
+        errors.name = "Name is mandatory";
+      }
+
+      if (!values.mobileNo) {
+        errors.mobileNo = "Mobile number is mandatory";
+      } else if (!/^\d{10}$/.test(values.mobileNo)) {
+        errors.mobileNo = "Invalid mobile number";
+      }
+
+      if (!values.email) {
+        errors.email = "Email is mandatory";
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
+        errors.email = "Invalid email address";
+      }
+
+      if (!values.department) {
+        errors.department = "Department is mandatory";
+      }
+
+      if (!values.joining) {
+        errors.joining = "Date is mandatory";
+      }
+
+      if (!values.reporting) {
+        errors.reporting = "Reporting is mandatory";
+      }
+
+      if (!values.expirience) {
+        errors.expirience = "Experience is mandatory";
+      }
+
+      if (!values.salary) {
+        errors.salary = "Salary is mandatory";
+      }
+
+      if (!values.linkedin) {
+        errors.linkedin = "LinkedIn is mandatory";
+      }
+
+      return errors;
+    },
     onSubmit: async (values, formikbag) => {
       try {
         setLoading(true);
         if (uploadCompleted) {
           values.image = imageFileUrl;
-          await axios.post("", values);
+          await axios.post(`${config.Api}/api/create`, values);
           formikbag.resetForm();
-          alert("Data created successfully");
-          navigate("/dashboard");
+          setShowModal(true); 
         } else {
           console.error("Image upload not completed yet");
         }
@@ -90,10 +138,29 @@ const Addapplicants = () => {
     },
   });
 
+  useEffect(() => {
+    const reporting = async () => {
+      try {
+        const response = await axios.get(`${config.Api}/report/getAll`);
+        setReportingperson(response.data.users);
+      } catch (error) {
+        console.log("Error fetching reporting data:", error);
+      }
+    };
+    reporting();
+  }, []);
+
+  const handleCloseModal = () => {
+    setShowModal(false); 
+    navigate("/"); 
+  };
+
+
   return (
     <>
-      <Header />
+           <Header/>
       <div className="container margin-top">
+ 
         <h3 className="text-center mt-5">Add Applicants</h3>
         <div className="shadow-lg p-4 rounded">
           <form onSubmit={formik.handleSubmit}>
@@ -108,8 +175,11 @@ const Addapplicants = () => {
                   value={formik.values.name}
                   onChange={formik.handleChange}
                 />
-                <span className="text-danger">{formik.errors.name}</span>
+                {formik.errors.name && (
+                  <span className="text-danger">{formik.errors.name}</span>
+                )}
               </div>
+
               <div className="col-lg-4">
                 <label htmlFor="mobileNo">Mobile No</label>
                 <input
@@ -125,7 +195,7 @@ const Addapplicants = () => {
               <div className="col-lg-4">
                 <label htmlFor="email">Email</label>
                 <input
-                  type="email"
+                  type="text"
                   className="form-control"
                   id="email"
                   name="email"
@@ -148,76 +218,81 @@ const Addapplicants = () => {
               </div>
 
               <div className="col-lg-4">
-                <label>joining</label>
-                <div className="form-check">
-                  <input
-                    type="date"
-                    className="form-check-input"
-                    id="joining"
-                    name="joining"
-                    checked={formik.values.joining}
-                    onChange={formik.handleChange}
-                  />
-                </div>
+                <label>date of joining</label>
+
+                <input
+                  type="date"
+                  className="form-control"
+                  id="joining"
+                  name="joining"
+                  value={formik.values.joining}
+                  onChange={formik.handleChange}
+                />
               </div>
               <div className="col-lg-4">
-                <label>reporting</label>
-                <div className="form-check">
-                  <input
-                    type="text"
-                    className="form-check-input"
+                <label>Reporting Person</label>
+                <div className="input-group">
+                  <select
+                    className="form-control"
                     id="reporting"
                     name="reporting"
-                    checked={formik.values.reporting}
+                    value={formik.values.reporting}
                     onChange={formik.handleChange}
-                  />
+                  >
+                    <option value="">Select Reporting Person 🔽</option>
+                    {reportingperson.map((person) => (
+                      <option key={person._id} value={person.name}>
+                        {person.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
-
-                <span className="text-danger">{formik.errors.reporting}</span>
+                {formik.errors.reporting && (
+                  <span className="text-danger">{formik.errors.reporting}</span>
+                )}
               </div>
 
               <div className="col-lg-4">
-                <label>expirience</label>
-                <div className="form-check">
-                  <input
-                    type="number"
-                    className="form-check-input"
-                    id="expirience"
-                    name="expirience"
-                    checked={formik.values.expirience}
-                    onChange={formik.handleChange}
-                  />
-                </div>
+                <label>experience</label>
+
+                <input
+                  type="number"
+                  className="form-control"
+                  id="expirience"
+                  name="expirience"
+                  value={formik.values.expirience}
+                  onChange={formik.handleChange}
+                />
+
                 <span className="text-danger">{formik.errors.expirience}</span>
               </div>
 
               <div className="col-lg-4">
                 <label>Salary</label>
-                <div className="form-check">
-                  <input
-                    type="number"
-                    className="form-check-input"
-                    id="Salary"
-                    name="Salary"
-                    checked={formik.values.Salary}
-                    onChange={formik.handleChange}
-                  />
-                </div>
-                <span className="text-danger">{formik.errors.Salary}</span>
+
+                <input
+                  type="number"
+                  className="form-control"
+                  id="salary"
+                  name="salary"
+                  value={formik.values.salary}
+                  onChange={formik.handleChange}
+                />
+
+                <span className="text-danger">{formik.errors.salary}</span>
               </div>
 
               <div className="col-lg-4">
                 <label>linkedin</label>
-                <div className="form-check">
-                  <input
-                    type="text"
-                    className="form-check-input"
-                    id="linkedin"
-                    name="linkedin"
-                    checked={formik.values.linkedin}
-                    onChange={formik.handleChange}
-                  />
-                </div>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="linkedin"
+                  name="linkedin"
+                  value={formik.values.linkedin}
+                  onChange={formik.handleChange}
+                />
+
                 <span className="text-danger">{formik.errors.linkedin}</span>
               </div>
 
@@ -227,7 +302,6 @@ const Addapplicants = () => {
                   type="file"
                   className="form-control"
                   name="image"
-                  a
                   accept="image/"
                   onChange={HandleImage}
                 />
@@ -241,6 +315,7 @@ const Addapplicants = () => {
           </form>
         </div>
       </div>
+      <SuccessModal show={showModal} handleClose={handleCloseModal}/> 
     </>
   );
 };
