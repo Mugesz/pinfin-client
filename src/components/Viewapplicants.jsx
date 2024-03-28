@@ -40,6 +40,9 @@ const Viewapplicants = () => {
                 <b>Name</b> : {item.name}
               </h3>
               <h3>
+                <b>Date of Birth</b> : {item.dob}
+              </h3>
+              <h3>
                 <b>Email</b> : {item.email}
               </h3>
               <h3>
