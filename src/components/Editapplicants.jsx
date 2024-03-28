@@ -64,6 +64,7 @@ const Editapplicants = () => {
   const formik = useFormik({
     initialValues: {
       name: "",
+      dob: "",
       mobileNo: "",
       email: "",
       department: "",
@@ -126,11 +127,9 @@ const Editapplicants = () => {
           values.image = imageFileUrl;
           await axios.put(`${config.Api}/api/edit/${id}`, values);
           setShowModal(true);
-        
         } else {
           await axios.put(`${config.Api}/api/edit/${id}`, values);
           setShowModal(true);
-          
         }
       } catch (error) {
         console.error("Error updating user data:", error);
@@ -139,20 +138,17 @@ const Editapplicants = () => {
       }
     },
   });
-  
-  
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${config.Api}/api/getone/${id}`);
-        const userData = response.data.users;
-        setUserData(userData);
-        formik.setValues(userData);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      }
-    };
-  
 
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`${config.Api}/api/getone/${id}`);
+      const userData = response.data.users;
+      setUserData(userData);
+      formik.setValues(userData);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
 
   const fetchReportingPersons = async () => {
     try {
@@ -172,7 +168,6 @@ const Editapplicants = () => {
     setShowModal(false);
     navigate("/");
   };
-  
 
   return (
     <>
@@ -190,6 +185,19 @@ const Editapplicants = () => {
               onChange={formik.handleChange}
             />
             <span className="text-danger">{formik.errors.name}</span>
+          </div>
+
+          <div className="col-lg-4">
+            <label>Date of Birth</label>
+
+            <input
+              type="date"
+              className="form-control"
+              id="dob"
+              name="dob"
+              value={formik.values.dob}
+              onChange={formik.handleChange}
+            />
           </div>
           <div className="col-lg-4">
             <label htmlFor="mobileNo">Mobile No</label>
@@ -315,7 +323,7 @@ const Editapplicants = () => {
           </button>
         </div>
       </form>
-      <SuccessModal show={showModal} handleClose={handleCloseModal}/> 
+      <SuccessModal show={showModal} handleClose={handleCloseModal} />
     </>
   );
 };

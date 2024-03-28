@@ -181,7 +181,20 @@ const Addapplicants = () => {
               </div>
 
               <div className="col-lg-4">
-                <label htmlFor="mobileNo">Mobile No</label>
+                <label>Date of Birth</label>
+
+                <input
+                  type="date"
+                  className="form-control"
+                  id="dob"
+                  name="dob"
+                  value={formik.values.dob}
+                  onChange={formik.handleChange}
+                />
+              </div>
+
+              <div className="col-lg-4">
+                <label htmlFor="mobileNo">Phone No</label>
                 <input
                   type="tel"
                   className="form-control"
@@ -205,7 +218,7 @@ const Addapplicants = () => {
                 <span className="text-danger">{formik.errors.email}</span>
               </div>
               <div className="col-lg-4 mt-5">
-                <label htmlFor="gender">department</label>
+                <label htmlFor="gender">Department</label>
                 <input
                   type="text"
                   className="form-control"
@@ -218,7 +231,7 @@ const Addapplicants = () => {
               </div>
 
               <div className="col-lg-4">
-                <label>date of joining</label>
+                <label>Date of joining</label>
 
                 <input
                   type="date"
@@ -253,7 +266,7 @@ const Addapplicants = () => {
               </div>
 
               <div className="col-lg-4">
-                <label>experience</label>
+                <label>experience(in months)</label>
 
                 <input
                   type="number"
@@ -283,7 +296,7 @@ const Addapplicants = () => {
               </div>
 
               <div className="col-lg-4">
-                <label>linkedin</label>
+                <label>linkedin link</label>
                 <input
                   type="text"
                   className="form-control"
@@ -297,7 +310,7 @@ const Addapplicants = () => {
               </div>
 
               <div className="col-lg-4">
-                <label>Image</label>
+                <label>government Id-proof</label>
                 <input
                   type="file"
                   className="form-control"

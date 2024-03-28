@@ -48,6 +48,7 @@ const Allapplicants = () => {
                     <tr>
                       <th className="bg-success text-light">ID</th>
                       <th className="bg-success text-light">Name</th>
+                      <th className="bg-success text-light">DOB</th>
                       <th className="bg-success text-light">Mobile No</th>
                       <th className="bg-success text-light">Email</th>
                       <th className="bg-success text-light">Department</th>
@@ -66,6 +67,7 @@ const Allapplicants = () => {
                       <tr key={index} className="user-row">
                         <td>{item._id}</td>
                         <td>{item.name}</td>
+                        <td>{item.dob}</td>
                         <td>{item.mobileNo}</td>
                         <td>{item.email}</td>
                         <td>{item.department}</td>
