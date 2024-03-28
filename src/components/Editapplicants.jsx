@@ -189,16 +189,16 @@ const Editapplicants = () => {
 
           <div className="col-lg-4">
             <label>Date of Birth</label>
-
             <input
               type="date"
               className="form-control"
               id="dob"
               name="dob"
-              value={formik.values.dob}
+              value={formik.values.dob} 
               onChange={formik.handleChange}
             />
           </div>
+
           <div className="col-lg-4">
             <label htmlFor="mobileNo">Mobile No</label>
             <input
