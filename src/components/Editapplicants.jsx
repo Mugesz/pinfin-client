@@ -143,8 +143,6 @@ const Editapplicants = () => {
     try {
       const response = await axios.get(`${config.Api}/api/getone/${id}`);
       const userData = response.data.users;
-  
-      // Parse the date of birth into the correct format
       userData.dob = userData.dob ? new Date(userData.dob).toISOString().split('T')[0] : '';
   
       setUserData(userData);
